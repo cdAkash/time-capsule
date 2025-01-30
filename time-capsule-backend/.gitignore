@@ -1,0 +1,23 @@
+# Node modules
+node_modules/
+
+# Environment file
+.env
+
+# Log files
+errors.log
+
+# Build artifacts
+dist/
+build/
+
+# Coverage reports
+coverage/
+
+# Dependency artifacts
+package-lock.json
+yarn.lock
+
+# System files
+.DS_Store
+npm-debug.log
