@@ -14,7 +14,7 @@ class BlockchainService {
         throw new Error("DeliveryDate must be a Unix timestamp number");
       }
 
-      // Explicitly switch to the Sepolia network
+      // Connect to the Sepolia network
       const sepoliaNetwork = hre.config.networks.sepolia;
       if (!sepoliaNetwork) {
         throw new Error("Sepolia network configuration not found in hardhat.config.js");
@@ -62,7 +62,7 @@ class BlockchainService {
       console.log(`Loading ABI from: ${abiPath}`);
       const abi = require(abiPath).abi;
   
-      // Log the ABI for debugging
+      // ABI for debugging
       console.log("Loaded ABI:", JSON.stringify(abi, null, 2));
   
       // Instantiate the contract
@@ -71,7 +71,7 @@ class BlockchainService {
   
       console.log(`Fetching data from contract at ${contractAddress}...`);
   
-      // Call the getData function
+      
       const [email, hash, deliveryDate] = await contract.getData();
   
       console.log("Fetched data:", { email, hash, deliveryDate });
