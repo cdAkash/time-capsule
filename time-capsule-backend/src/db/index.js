@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import { DynamoDBClient, ListTablesCommand } from '@aws-sdk/client-dynamodb'; // Correct import for ListTablesCommand
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb'; // Import DynamoDBDocumentClient from lib-dynamodb
-
+import dynamoose from 'dynamoose';
 dotenv.config();
 
 // Configure AWS SDK with credentials and region
@@ -14,6 +14,8 @@ const client = new DynamoDBClient({
 });
 
 const dynamoDB = DynamoDBDocumentClient.from(client);
+
+dynamoose.aws.ddb.set(client);
 
 const connectToDynamoDB = async () => {
   try {
