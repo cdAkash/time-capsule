@@ -10,6 +10,7 @@ async function createUser(email,password) {
         EntityType:'User',
         email,
         password,
+        refreshToken:'',
         activeCapsule:[],
         createdAt:new Date().toISOString(),
     })
