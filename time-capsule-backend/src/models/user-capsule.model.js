@@ -11,8 +11,9 @@ const UserCapsuleSchema = new dynamoose.Schema(
             required:true,
         },
         EntityType:{type:String,required:true},
-        email:{type:String,unique:true},
+        email:{type:String,unique:true,index:{global:true}},
         password:String,
+        refreshToken:String,
         activeCapsule:{
             type:Array,
             schema:[String],
