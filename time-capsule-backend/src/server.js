@@ -1,7 +1,6 @@
 import express from 'express';
 import { connectToDynamoDB } from './db/index.js';
-
-const app = express();
+import { app } from './app.js';
 const port = process.env.PORT || 3000;
 
 // Middleware to parse JSON requests
