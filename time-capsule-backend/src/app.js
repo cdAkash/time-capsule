@@ -21,6 +21,6 @@ import authRoute from './routes/auth.routes.js'
 import capsuleRoute from './routes/capsule.routes.js'
 
 app.use("/api/v1/auth",authRoute);
-app.use("/ai/v1/capsule",capsuleRoute);
+app.use("/api/v1/capsule",capsuleRoute);
 
 export {app}

@@ -51,7 +51,7 @@ const login = asyncHandler(async(req,res)=>{
         }
         const user = userResponse.data.user;
 
-        console.log(userResponse)
+       
 
         const isPasswordValid = comparePassword(password,user.password);
         if (!isPasswordValid) {
@@ -124,7 +124,34 @@ const forgotPassword = asyncHandler(async(req,res)=>{
 })
 
 const logout = asyncHandler(async(req,res)=>{
+    try {
+        const userId = req.user.data[0].PK
+        // console.log(req.user.data[0].PK)
+        await UserCapsuleTable.update({
+                PK: userId,
+                SK: 'METADATA'
+            }, {
+                $SET: {
+                    refreshToken: '',
+                    lastLogoutAt: new Date().toISOString()  
+                }
+            });
+            const options = {
+                httpOnly: true,
+                secure: true,
+            }
+            return res
+            .status(200)
+            .clearCookie("accesToken",options)
+            .clearCookie("refreshToken",options)
+            .json(new ApiResponse(200, {}, "Logged out successfully"));
 
+    } catch (error) {
+        console.error("Logout error:", error);
+        return res
+            .status(500)
+            .json(new ApiResponse(500, { error: error.message }, "Logout failed"));
+    }
 })
 
 export {

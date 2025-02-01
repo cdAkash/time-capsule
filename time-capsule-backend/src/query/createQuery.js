@@ -43,37 +43,53 @@ async function createUser(email,password) {
     }
 }
 
-async function createCapsule(userId,contractAddress,hash,emails,deliveryDate) {
-    
+async function createCapsule(userId, contractAddress, fileHash, fileURL, emails, deliveryDate) {
     try {
-        const capsuleId=uuidv4();
-    const capsule = new UserCapsuleTable({
-        PK:`USER#${userId}`,
-        SK:`CAPSULE#${capsuleId}`,
-        EntityType:'capsule',
-        contractAddress,
-        hash,
-        emails,
-        deliveryDate,
-        createdAt: new Date().toISOString(),
-    })
+        const capsuleId = uuidv4();
+        
+        // Input validation
+        if (!userId || !fileHash || !fileURL || !emails || !deliveryDate) {
+            throw new Error("Missing required fields");
+        }
+        console.log(contractAddress)
+        if(!contractAddress){
+            throw new Error("Missing Contract address");
+        }
+
+        const capsule = new UserCapsuleTable({
+            PK: `USER#${userId}`,
+            SK: `CAPSULE#${capsuleId}`,
+            EntityType: 'Capsule',
+            contractAddress,
+            fileHash,
+            fileURL,
+            emails,
+            deliveryDate,
+            createdAt: new Date().toISOString(),
+        });
+
         await capsule.save();
-        const verififedCapsule = await UserCapsuleTable.query('Sk')
+
+        // Verify capsule creation
+        const verifiedCapsule = await UserCapsuleTable.query('PK')
+            .eq(`USER#${userId}`)
+            .and()
+            .where('SK')
             .eq(`CAPSULE#${capsuleId}`)
             .exec();
 
-        if(!verififedCapsule || verififedCapsule.length===0){
-            throw new error("Capsule creation Failed")
+        if (!verifiedCapsule || verifiedCapsule.length === 0) {
+            throw new Error("Capsule creation verification failed");
         }
-        return new ApiResponse(201,{
-            capsule:verififedCapsule[0],
-            user:userId
-        },"capsule created successfully YAY!! :)")
 
-        
+        return new ApiResponse(201, {
+            capsule: verifiedCapsule[0],
+            capsuleId
+        }, "Capsule created successfully");
+
     } catch (error) {
-        return new ApiResponse(500,{error:error.message},"capsule Creation Failed")
+        console.error("Capsule creation failed:", error);
+        return new ApiResponse(500, { error: error.message }, "Capsule creation failed");
     }
 }
-
 export {createUser,createCapsule}

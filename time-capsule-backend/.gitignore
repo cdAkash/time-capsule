@@ -21,3 +21,5 @@ yarn.lock
 # System files
 .DS_Store
 npm-debug.log
+
+public/temp

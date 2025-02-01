@@ -60,8 +60,27 @@ async function updatePassword(email,newPassword) {
         return new ApiResponse(501,{error},"Password updation Failed :(")
     }
 }
+
+async function getUserByID(FullUserId) {
+    try {
+        const user = await UserCapsuleTable.query('PK')
+        .eq(FullUserId)
+        .and()
+        .where('SK')
+        .eq('METADATA')
+        .attributes(['PK','email'])
+        .exec()
+
+        
+        return new ApiResponse(200,user,"User Found")
+    } catch (error) {
+        console.error("Error fetching user:", error);
+        return new ApiResponse(501, { error: error.message }, "User fetching failed!");
+    }
+}
 export {
     getUserByEmail,
     getAllUsersCapsules,
-    updatePassword
+    updatePassword,
+    getUserByID
 }

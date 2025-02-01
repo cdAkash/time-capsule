@@ -21,7 +21,8 @@ const UserCapsuleSchema = new dynamoose.Schema(
             schema:[String],
         },
         contractAddress:{type:String,unique:true},
-        hash:String,
+        fileHash:String,
+        fileURL:String,
         emails:{
             type:Array,
             schema:[String],
