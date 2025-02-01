@@ -5,7 +5,7 @@ import dynamoose from 'dynamoose';
 dotenv.config();
 
 // Configure AWS SDK with credentials and region
-const client = new DynamoDBClient({
+const client = new dynamoose.aws.ddb.DynamoDB({
   region: process.env.AWS_REGION,
   credentials: {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -13,13 +13,13 @@ const client = new DynamoDBClient({
   },
 });
 
-const dynamoDB = DynamoDBDocumentClient.from(client);
 
 dynamoose.aws.ddb.set(client);
 
 const connectToDynamoDB = async () => {
   try {
-    const data = await client.send(new ListTablesCommand({})); // Use the DynamoDBClient directly for ListTablesCommand
+    const command = new ListTablesCommand({});
+    const data = await client.send(command);
     console.log('Connected to DynamoDB. Tables:', data.TableNames);
     return data;
   } catch (err) {
@@ -28,4 +28,4 @@ const connectToDynamoDB = async () => {
   }
 };
 
-export { dynamoDB, connectToDynamoDB };
+export { connectToDynamoDB };

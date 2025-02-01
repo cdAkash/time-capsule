@@ -1,31 +1,52 @@
-import UserCapsuleTable from '../models/user-capsule.model.js'
-import ApiResponse from '../utils/ApiResponse.js';
+import {UserCapsuleTable} from '../models/user-capsule.model.js'
+import {ApiResponse} from '../utils/ApiResponse.js';
 import {v4 as uuidv4} from 'uuid';
+import  {hashPassword}  from '../utils/auth.js';
 
 async function createUser(email,password) {
-    const userId = uuidv4();
-    const user = new UserCapsuleTable({
+    try {
+        const userId = uuidv4();
+        const hashedPass = await hashPassword(password)
+        //token generation
+
+        const user = new UserCapsuleTable({
         PK:`USER#${userId}`,
         SK:`METADATA`,
         EntityType:'User',
-        email,
-        password,
+        email:email,
+        password:hashedPass,
         refreshToken:'',
         activeCapsule:[],
         createdAt:new Date().toISOString(),
     })
-
-    
-    try {
         await user.save();
-        return new ApiResponse(200,{user},"User created")
+        // Verifying the  user creation 
+        const verifiedUser = await UserCapsuleTable.query('PK')
+            .eq(`USER#${userId}`)
+            .and()
+            .where('SK')
+            .eq('METADATA')
+            .exec();
+
+        if (!verifiedUser || verifiedUser.length === 0) {
+            throw new Error('User creation verification failed');
+        }
+
+        // Returning the verified user data
+        return new ApiResponse(201, { 
+            user: verifiedUser[0],
+            userId: userId 
+        }, "User created successfully");
     } catch (error) {
-        return new ApiResponse(500,{error},"User Creation Failed")
+        console.error("user creation Failed",error)
+        return new ApiResponse(500,{error:error.message},"User Creation Failed")
     }
 }
 
 async function createCapsule(userId,contractAddress,hash,emails,deliveryDate) {
-    const capsuleId=uuidv4();
+    
+    try {
+        const capsuleId=uuidv4();
     const capsule = new UserCapsuleTable({
         PK:`USER#${userId}`,
         SK:`CAPSULE#${capsuleId}`,
@@ -36,13 +57,23 @@ async function createCapsule(userId,contractAddress,hash,emails,deliveryDate) {
         deliveryDate,
         createdAt: new Date().toISOString(),
     })
-    
-    try {
         await capsule.save();
-        return new ApiResponse(200,{user},"capsule created")
+        const verififedCapsule = await UserCapsuleTable.query('Sk')
+            .eq(`CAPSULE#${capsuleId}`)
+            .exec();
+
+        if(!verififedCapsule || verififedCapsule.length===0){
+            throw new error("Capsule creation Failed")
+        }
+        return new ApiResponse(201,{
+            capsule:verififedCapsule[0],
+            user:userId
+        },"capsule created successfully YAY!! :)")
+
+        
     } catch (error) {
-        return new ApiResponse(500,{error},"capsule Creation Failed")
+        return new ApiResponse(500,{error:error.message},"capsule Creation Failed")
     }
 }
 
-export default {createUser,createCapsule}
+export {createUser,createCapsule}

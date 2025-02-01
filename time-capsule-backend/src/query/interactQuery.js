@@ -1,18 +1,21 @@
-import UserCapsuleTable from '../models/user-capsule.model.js'
-import ApiResponse from '../utils/ApiResponse.js';
+import {UserCapsuleTable} from '../models/user-capsule.model.js'
+import {ApiResponse} from '../utils/ApiResponse.js';
 
 async function getUserByEmail(email) {
     try {
+        
         const user = await UserCapsuleTable.query(email)
+            .where('email')
             .eq(email)
             .and()
             .where('SK')
             .eq('METADATA')
             .exec();
+        
         if (user.length === 0) {
             return new ApiResponse(404, {}, "User not found!");
         }
-            return new ApiResponse(200,{user},"User Fetched successfully.")
+            return new ApiResponse(200,{user:user[0]},"User Fetched successfully.")
     } catch (error) {
         return new ApiResponse(501,{error},"user fetching failed or user not Found!")
     }
@@ -57,7 +60,7 @@ async function updatePassword(email,newPassword) {
         return new ApiResponse(501,{error},"Password updation Failed :(")
     }
 }
-export default {
+export {
     getUserByEmail,
     getAllUsersCapsules,
     updatePassword

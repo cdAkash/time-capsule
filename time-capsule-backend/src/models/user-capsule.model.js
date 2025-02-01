@@ -5,13 +5,15 @@ const UserCapsuleSchema = new dynamoose.Schema(
         PK:{
             type:String,
             required:true,
+            hashKey:true,
         },
         SK:{
             type:String,
             required:true,
+            rangeKey:true,
         },
         EntityType:{type:String,required:true},
-        email:{type:String,unique:true,index:{global:true}},
+        email:{type:String,unique:true,index:{name:"EmailIndex",global:true}},
         password:String,
         refreshToken:String,
         activeCapsule:{
@@ -26,8 +28,14 @@ const UserCapsuleSchema = new dynamoose.Schema(
         },
         deliveryDate:String,
         createdAt:String,
-    },{timestamps:true,saveUnknown:true}
+    },{
+        saveUnknown:true,
+    }
 )
 
 
-export const UserCapsuleTable = dynamoose.model('UserCapsuleTable',UserCapsuleSchema)
+
+
+export const UserCapsuleTable = dynamoose.model('UserCapsuleTable',UserCapsuleSchema,{
+    waitForActive: true
+})
