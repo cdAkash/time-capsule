@@ -10,8 +10,8 @@ class BlockchainService {
       if (!hash || typeof hash !== 'string') {
         throw new Error("Hash must be a non-empty string");
       }
-      if (!deliveryDate || typeof deliveryDate !== 'number') {
-        throw new Error("DeliveryDate must be a Unix timestamp number");
+      if (!deliveryDate || typeof deliveryDate !== 'string') {
+        throw new Error("DeliveryDate must be a non-empty string");
       }
 
       // Connect to the Sepolia network
@@ -27,17 +27,16 @@ class BlockchainService {
       console.log("Deploying with account:", signer.address);
 
       // Converting to BigInt for Solidity
-      const timestampBigInt = BigInt(deliveryDate);
 
       console.log("Deployment parameters:", {
         email,
         hash,
-        deliveryDate: timestampBigInt.toString(),
+        deliveryDate,
       });
 
       // Get the contract factory
       const DataStorage = await hre.ethers.getContractFactory("DataStorage", signer);
-      const contract = await DataStorage.deploy(email, hash, timestampBigInt);
+      const contract = await DataStorage.deploy(email, hash, deliveryDate);
       await contract.waitForDeployment();
 
       const address = await contract.getAddress();

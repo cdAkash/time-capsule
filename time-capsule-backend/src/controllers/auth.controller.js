@@ -81,9 +81,10 @@ const login = asyncHandler(async(req,res)=>{
                 .json(new ApiResponse(500, {}, "Login failed - token update error"));
         }
     
-        const options={
-            httpOnly:true,
-            secure:true
+        const options = {
+            httpOnly: true,
+            secure: process.env.NODE_ENV==='production',
+            sameSite:process.env.NODE_ENV==='production' ? 'None' : 'Lax',
         }
         const userWithoutSensitiveData = {
             email: user.email,
@@ -100,7 +101,7 @@ const login = asyncHandler(async(req,res)=>{
                 200,
                 {
                     user: userWithoutSensitiveData,
-                    accessToken 
+                    
                 },
                 "Login successful"
             ));
@@ -138,7 +139,8 @@ const logout = asyncHandler(async(req,res)=>{
             });
             const options = {
                 httpOnly: true,
-                secure: true,
+                secure: process.env.NODE_ENV==='production',
+                sameSite:process.env.NODE_ENV==='production' ? 'None' : 'Lax',
             }
             return res
             .status(200)

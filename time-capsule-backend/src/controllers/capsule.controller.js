@@ -33,18 +33,22 @@ const createCapsuleController = asyncHandler(async(req,res)=>{
 
     const localFilePath = req.file?.path;
     const fileHash = generateFileHash(localFilePath)
+
+
     try {
 
     const cloud = await uploadOnCloudinary(localFilePath)
     const fileURL = cloud.url
-    const deliveryDateTimeStamp = Math.floor(new Date(deliveryDate).getTime() / 1000);
-    const contract= await createCapsuleContract(email,fileHash,deliveryDateTimeStamp);
-    const contractAddress=contract.contractAddress;
-    console.log(contract)
-    // const contractAddress ="testing contract"
+    
+    // const contractAddress= await createCapsuleContract(email,fileHash,deliveryDateTimeStamp);
+    // if (contractAddress instanceof ApiResponse) {
+    //         throw new Error(contractAddress.message);
+    //     }
+    
+    const contractAddress ="0x45b244301dd6F9A3d8A3EdB562573a2741b6e5b4"
 
     
-        const capsule = await createCapsuleQuery(userId,contract,fileHash,fileURL,emails,deliveryDate);
+        const capsule = await createCapsuleQuery(userId,contractAddress,fileHash,fileURL,emails,deliveryDate);
         if(capsule.statusCode!==201){
             throw new error(capsule.message || "Capsule creation Failed")
         }

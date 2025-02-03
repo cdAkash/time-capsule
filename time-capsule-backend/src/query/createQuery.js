@@ -16,7 +16,6 @@ async function createUser(email,password) {
         email:email,
         password:hashedPass,
         refreshToken:'',
-        activeCapsule:[],
         createdAt:new Date().toISOString(),
     })
         await user.save();
@@ -57,7 +56,7 @@ async function createCapsule(userId, contractAddress, fileHash, fileURL, emails,
         }
 
         const capsule = new UserCapsuleTable({
-            PK: `USER#${userId}`,
+            PK: `${userId}`,
             SK: `CAPSULE#${capsuleId}`,
             EntityType: 'Capsule',
             contractAddress,
@@ -65,6 +64,7 @@ async function createCapsule(userId, contractAddress, fileHash, fileURL, emails,
             fileURL,
             emails,
             deliveryDate,
+            status:"pending",
             createdAt: new Date().toISOString(),
         });
 
@@ -72,7 +72,7 @@ async function createCapsule(userId, contractAddress, fileHash, fileURL, emails,
 
         // Verify capsule creation
         const verifiedCapsule = await UserCapsuleTable.query('PK')
-            .eq(`USER#${userId}`)
+            .eq(`${userId}`)
             .and()
             .where('SK')
             .eq(`CAPSULE#${capsuleId}`)

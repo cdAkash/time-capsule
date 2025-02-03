@@ -10,7 +10,7 @@ const comparePassword = async (password, hash) => {
   };
 
 const generateAccessToken = (userId) => {
-    return jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
+    return jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '55m' });
   };
 
 const generateRefreshToken = (userId) => {

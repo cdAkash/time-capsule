@@ -16,10 +16,6 @@ const UserCapsuleSchema = new dynamoose.Schema(
         email:{type:String,unique:true,index:{name:"EmailIndex",global:true}},
         password:String,
         refreshToken:String,
-        activeCapsule:{
-            type:Array,
-            schema:[String],
-        },
         contractAddress:{type:String,unique:true},
         fileHash:String,
         fileURL:String,
@@ -27,7 +23,17 @@ const UserCapsuleSchema = new dynamoose.Schema(
             type:Array,
             schema:[String],
         },
-        deliveryDate:String,
+        deliveryDate: { 
+            type: String,
+        },
+        status:{
+            type:String,
+            index: {
+                name: "DeliveryDateStatusIndex",
+                global: true,
+                rangeKey: "deliveryDate"
+            }
+        },
         createdAt:String,
     },{
         saveUnknown:true,
