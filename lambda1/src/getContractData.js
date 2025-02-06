@@ -1,9 +1,8 @@
 import { ethers } from 'ethers';
-// import { config } from 'dotenv';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const dataStorage = require('./hardhat.abi.json');
-// config();
+
 async function getCapsuleData(contractAddress) {
     try {
       // Create a provider using an environment variable for the RPC URL
@@ -21,7 +20,8 @@ async function getCapsuleData(contractAddress) {
       // Fetch the data
       console.log(`Fetching data from contract at ${contractAddress}...`);
       const [email, hash, deliveryDate] = await contract.getData();
-      console.log("Fetched data:", { email, hash, deliveryDate });
+      // console.log("Fetched data:", { email, hash, deliveryDate });
+      
   
       return {
         contractAddress,
@@ -29,7 +29,6 @@ async function getCapsuleData(contractAddress) {
           email,
           hash,
           deliveryDate: deliveryDate.toString(),
-          humanReadableDate: new Date(Number(deliveryDate) * 1000).toISOString(),
         },
       };
     } catch (error) {

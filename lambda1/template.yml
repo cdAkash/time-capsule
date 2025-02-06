@@ -14,7 +14,7 @@ Resources:
       CodeUri: ./src
       Description: ''
       MemorySize: 128
-      Timeout: 3
+      Timeout: 10
       Handler: index.handler
       Runtime: nodejs22.x
       Architectures:
@@ -25,6 +25,8 @@ Resources:
         Variables:
           PRIVATE_KEY: b9dceb18fc57272c42aef9e7a04c080f9fed32484fbffdd625959b7ef4d17b2b
           SEPOLIA_RPC_URL: https://sepolia.infura.io/v3/c937749c2a6a4b3998b3361b910b3d82
+          LAMBDA_FUNCTION_ARN : arn:aws:lambda:ap-south-1:727646493403:function:sendEmails
+          EVENTBRIDGE_SCHEDULER_ROLE_ARN : arn:aws:iam::727646493403:role/service-role/Amazon_EventBridge_Scheduler_LAMBDA_1a70f74b37
       EventInvokeConfig:
         MaximumEventAgeInSeconds: 21600
         MaximumRetryAttempts: 2

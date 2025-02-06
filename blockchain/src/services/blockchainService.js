@@ -81,7 +81,6 @@ class BlockchainService {
           email,
           hash,
           deliveryDate: deliveryDate.toString(),
-          humanReadableDate: new Date(Number(deliveryDate) * 1000).toISOString(),
         },
       };
     } catch (error) {
