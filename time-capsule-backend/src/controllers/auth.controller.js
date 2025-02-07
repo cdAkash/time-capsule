@@ -11,16 +11,12 @@ import { UserCapsuleTable } from '../models/user-capsule.model.js';
 import {generateOtp,
     verifyOtp
 } from '../services/otp.service.js'
-// first register conntroller
-// login controller
-// forgot controller
-// 
 
 const sendOTP = asyncHandler(async(req, res) => {
     const { email } = req.body;
 
     try {
-        // Validate email format
+
         function isValidEmail(email) {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             return emailRegex.test(email);
@@ -32,7 +28,6 @@ const sendOTP = asyncHandler(async(req, res) => {
                 .json(new ApiResponse(400, {}, "Not a valid Email!"));
         }
 
-        // Generate and send OTP
         await generateOtp(email);
 
         return res
@@ -59,7 +54,7 @@ const verifyOTPAndLogin = asyncHandler(async(req, res) => {
     const { email, otp } = req.body;
 
     try {
-        // Verify OTP
+        
         const otpVerification = await verifyOtp(email, otp);
         
         if (!otpVerification.output) {
@@ -68,7 +63,7 @@ const verifyOTPAndLogin = asyncHandler(async(req, res) => {
                 .json(new ApiResponse(400, {}, otpVerification.message));
         }
 
-        // Create or get user
+        
         const userResponse = await verifyOrCreateUser(email);
         if (userResponse.statusCode !== 200 && userResponse.statusCode !== 201) {
             return res
@@ -77,12 +72,10 @@ const verifyOTPAndLogin = asyncHandler(async(req, res) => {
         }
 
         const userId = userResponse.data.userId;
-        
-        // Generate tokens
+    
         const accessToken = generateAccessToken(userId);
         const refreshToken = generateRefreshToken(userId);
 
-        // Update refresh token in database
         try {
             await UserCapsuleTable.update({
                 PK: userId,
@@ -100,7 +93,6 @@ const verifyOTPAndLogin = asyncHandler(async(req, res) => {
                 .json(new ApiResponse(500, {}, "Login failed - token update error"));
         }
 
-        // Set cookies
         const options = {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',

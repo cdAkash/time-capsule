@@ -30,7 +30,6 @@ async function createCapsuleContract(email,hash,deliveryDate) {
 }
 
 
-
 export {
     createCapsuleContract,
 }
