@@ -1,4 +1,5 @@
 node_modules/
 template.yml
-hardhat.abi.json
+src/hardhat.abi.json
 tmp/
+getAllCapsules-5633219b-0734-42c4-b611-650d78973933.zip
