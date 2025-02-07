@@ -1,7 +1,8 @@
 import {UserCapsuleTable} from '../models/user-capsule.model.js'
 import {ApiResponse} from '../utils/ApiResponse.js';
+import {v4 as uuidv4} from 'uuid';
 
-async function getUserByEmail(email) {
+async function verifyOrCreateUser(email) {
     try {
         
         const user = await UserCapsuleTable.query(email)
@@ -12,75 +13,64 @@ async function getUserByEmail(email) {
             .eq('METADATA')
             .exec();
         
-        if (user.length === 0) {
-            return new ApiResponse(404, {}, "User not found!");
-        }
-            return new ApiResponse(200,{user:user[0]},"User Fetched successfully.")
+            if (user.length === 0) {
+                // Creating the new user
+
+                const userId = `USER#${uuidv4()}`;
+                await UserCapsuleTable.create({
+                    PK: userId,
+                    SK: 'METADATA',
+                    email: email,
+                    createdAt: new Date().toISOString(),
+                    lastLoginAt: new Date().toISOString()
+                });
+                return new ApiResponse(201, { isNewUser: true, userId }, "New user created");
+            }
+            return new ApiResponse(200, { 
+                isNewUser: false, 
+                userId: user[0].PK 
+            }, "Existing user found");
     } catch (error) {
         return new ApiResponse(501,{error},"user fetching failed or user not Found!")
     }
 }
 
-async function getAllUsersCapsules(userId) {
+async function getAllUsersCapsules(FullUserId) {
     try {
-        const capsules = await UserCapsuleTable.query('PK')
-        .eq(`USER#${userId}`)
-        .and()
-        .where('SK')
-        .beginsWith('CAPSULE#')
-        .exec();
-        if (capsules.length === 0) {
-            return new ApiResponse(404, {}, "capsules not found!");
+        // Validate user ID
+        if (!FullUserId || !FullUserId.startsWith('USER#')) {
+            return new ApiResponse(400, null, "Invalid user ID format");
         }
-        return new ApiResponse(200,{capsules},"Capusles Fetched Succesfully.")
-    } catch (error) {
-        return new ApiResponse(501,{error},"Capusles fetching failed!")
-    }
-}
 
-async function updatePassword(email,newPassword) {
-    try {
-        const user = await UserCapsuleTable.query(email)
-            .eq(email)
+        const result = await UserCapsuleTable.query('PK')
+            .eq(FullUserId)
             .and()
             .where('SK')
-            .eq('METADATA')
+            .beginsWith('CAPSULE#')
+            .select('COUNT')  
             .exec();
 
-            if (user.length === 0) {
-                return new ApiResponse(404, {}, "User not found!");
-            }
+        return new ApiResponse(
+            200,
+            { 
+                count: result.count
+            },
+            "Capsule count fetched successfully"
+        );
 
-            await UserCapsuleTable.update(
-                {PK:user[0].PK,SK:user[0].SK},
-                {password:newPassword}
-            )
-            return new ApiResponse(200,{},"Password Updated :)")
     } catch (error) {
-        return new ApiResponse(501,{error},"Password updation Failed :(")
-    }
-}
-
-async function getUserByID(FullUserId) {
-    try {
-        const user = await UserCapsuleTable.query('PK')
-        .eq(FullUserId)
-        .and()
-        .where('SK')
-        .eq('METADATA')
-        .attributes(['PK','email'])
-        .exec()
-
+        console.error("Capsule count fetch error:", error);
         
-        return new ApiResponse(200,user,"User Found")
-    } catch (error) {
-        console.error("Error fetching user:", error);
-        return new ApiResponse(501, { error: error.message }, "User fetching failed!");
+        if (error.name === 'ValidationError') {
+            return new ApiResponse(400, null, "Invalid query parameters");
+        }
+
+        return new ApiResponse(500, null, "Failed to fetch capsule count");
     }
 }
+
+
 export {
-    getUserByEmail,
+    verifyOrCreateUser,
     getAllUsersCapsules,
-    updatePassword,
-    getUserByID
 }

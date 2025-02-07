@@ -1,4 +1,3 @@
-
 import {asyncHandler} from '../utils/asyncHandler.js'
 import {ApiResponse} from '../utils/ApiResponse.js'
 import { uploadOnCloudinary } from '../utils/cloudinary.js' 
@@ -7,6 +6,9 @@ import { uploadOnCloudinary } from '../utils/cloudinary.js'
 import { createCapsule as createCapsuleQuery } from '../query/createQuery.js'
 import { createCapsuleContract } from './blockchain.controller.js'
 import { generateFileHash } from '../services/hash.service.js'
+import { getAllUsersCapsules } from '../query/interactQuery.js'
+
+
 const createCapsuleController = asyncHandler(async(req,res)=>{
 
     const {emails,deliveryDate}=req.body
@@ -21,7 +23,7 @@ const createCapsuleController = asyncHandler(async(req,res)=>{
         }
     }
 
-    // Validate emails array
+    
     if (!Array.isArray(emails) || emails.length === 0 || emails.length > 2) {
         return res.status(400).json(
             new ApiResponse(400, null, "Please provide 1-2 valid email addresses")
@@ -63,9 +65,44 @@ const createCapsuleController = asyncHandler(async(req,res)=>{
     }
 })
 
-const userAllCapsules = asyncHandler(async(req,res)=>{
+const userAllCapsules = asyncHandler(async(req, res) => {
+    try {
+        
+        if (!req.user?.data?.[0]?.PK) {
+            return res
+                .status(401)
+                .json(new ApiResponse(401, null, "Unauthorized access"));
+        }
 
-})
+        const userId = req.user.data[0].PK;
+        const capsuleResponse = await getAllUsersCapsules(userId);
+
+    
+        if (capsuleResponse.statusCode !== 200) {
+            return res
+                .status(capsuleResponse.statusCode)
+                .json(capsuleResponse);
+        }
+        return res
+            .status(200)
+            .json(new ApiResponse(
+                200,
+                { capsuleCount: capsuleResponse.data.count },
+                "Successfully retrieved capsule count"
+            ));
+
+    } catch (error) {
+        console.error("Controller error - userAllCapsules:", error);
+        
+        return res
+            .status(500)
+            .json(new ApiResponse(
+                500,
+                null,
+                "Failed to retrieve capsule count. Please try again later."
+            ));
+    }
+});
 
 export {
     createCapsuleController,

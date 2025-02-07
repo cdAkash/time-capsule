@@ -8,5 +8,5 @@ import{upload} from '../middlewares/multer.middleware.js';
 
 const router = Router()
 router.route("/create-capsule").post(verifyJWT,upload.single('file'),createCapsuleController)
-router.route("/getAll-Capsule").get(userAllCapsules)
+router.route("/getAll-Capsule").get(verifyJWT,userAllCapsules)
 export default router

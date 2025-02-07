@@ -1,128 +1,142 @@
 
 import {asyncHandler} from '../utils/asyncHandler.js'
 import {ApiResponse} from '../utils/ApiResponse.js'
-import {createUser} from '../query/createQuery.js';
 import {comparePassword,
     generateAccessToken,
     generateRefreshToken} from '../utils/auth.js'
-import {getUserByEmail,
-    updatePassword} from '../query/interactQuery.js'
+import {
+    verifyOrCreateUser,
+} from '../query/interactQuery.js'
 import { UserCapsuleTable } from '../models/user-capsule.model.js';
+import {generateOtp,
+    verifyOtp
+} from '../services/otp.service.js'
 // first register conntroller
 // login controller
 // forgot controller
 // 
 
-const registerUser=asyncHandler(async(req,res)=>{
-    const {email,password} = req.body
-    try {
-        const response = await createUser(email,password);
-        return res.status(response.statusCode).json(response)
-    } catch (error) {
-        return res.status(response.statusCode).json(error)
-    }
-    
-})
+const sendOTP = asyncHandler(async(req, res) => {
+    const { email } = req.body;
 
-const login = asyncHandler(async(req,res)=>{
-    // steps to acheive login
-    // get email and password from body
-    // hit a query using email.
-    // get the  database password and user password compare it
-    // generate refreshToken and accessToken,
-    // save the refreshToken in the database
-    //allow user to be login by set the cookies.
     try {
-        const {email,password} = req.body;
-        function isValidEmail(email){
-            const emailRegex =/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        // Validate email format
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             return emailRegex.test(email);
         }
-    
-        if(!isValidEmail(email)){
-            return new ApiResponse(400,{},"Not a vaild Email!")
+
+        if (!isValidEmail(email)) {
+            return res
+                .status(400)
+                .json(new ApiResponse(400, {}, "Not a valid Email!"));
         }
-    
-        const userResponse = await getUserByEmail(email);
-        if (userResponse.statusCode !== 200) {
+
+        // Generate and send OTP
+        await generateOtp(email);
+
+        return res
+            .status(200)
+            .json(new ApiResponse(
+                200,
+                { email },
+                "OTP sent successfully. Please verify your email."
+            ));
+
+    } catch (error) {
+        console.error("OTP generation error:", error);
+        return res
+            .status(500)
+            .json(new ApiResponse(
+                500,
+                { error: error.message },
+                "Failed to send OTP"
+            ));
+    }
+});
+
+const verifyOTPAndLogin = asyncHandler(async(req, res) => {
+    const { email, otp } = req.body;
+
+    try {
+        // Verify OTP
+        const otpVerification = await verifyOtp(email, otp);
+        
+        if (!otpVerification.output) {
+            return res
+                .status(400)
+                .json(new ApiResponse(400, {}, otpVerification.message));
+        }
+
+        // Create or get user
+        const userResponse = await verifyOrCreateUser(email);
+        if (userResponse.statusCode !== 200 && userResponse.statusCode !== 201) {
             return res
                 .status(userResponse.statusCode)
                 .json(userResponse);
         }
-        const user = userResponse.data.user;
 
-       
+        const userId = userResponse.data.userId;
+        
+        // Generate tokens
+        const accessToken = generateAccessToken(userId);
+        const refreshToken = generateRefreshToken(userId);
 
-        const isPasswordValid = comparePassword(password,user.password);
-        if (!isPasswordValid) {
-            return res
-                .status(401)
-                .json(new ApiResponse(401, {}, "Invalid credentials"));
-        }
-        const accessToken = generateAccessToken(user.PK)
-        const refreshToken = generateRefreshToken(user.PK)
-    
-        // updating the database with refreshToken
-    
+        // Update refresh token in database
         try {
             await UserCapsuleTable.update({
-                PK: user.PK,
+                PK: userId,
                 SK: 'METADATA'
             }, {
                 $SET: {
-                refreshToken: refreshToken
+                    refreshToken: refreshToken,
+                    lastLoginAt: new Date().toISOString()
                 }
-                }
-        );
+            });
         } catch (updateError) {
             console.error("Error updating refresh token:", updateError);
             return res
                 .status(500)
                 .json(new ApiResponse(500, {}, "Login failed - token update error"));
         }
-    
+
+        // Set cookies
         const options = {
             httpOnly: true,
-            secure: process.env.NODE_ENV==='production',
-            sameSite:process.env.NODE_ENV==='production' ? 'None' : 'Lax',
-        }
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+        };
+
         const userWithoutSensitiveData = {
-            email: user.email,
-            userId: user.PK,
-            createdAt: user.createdAt,
-            activeCapsule: user.activeCapsule
+            email,
+            userId,
+            isNewUser: userResponse.data.isNewUser
         };
 
         return res
             .status(200)
-            .cookie("accessToken",accessToken,options)
-            .cookie("refreshToken",refreshToken,options)
+            .cookie("accessToken", accessToken, options)
+            .cookie("refreshToken", refreshToken, options)
             .json(new ApiResponse(
                 200,
                 {
                     user: userWithoutSensitiveData,
-                    
                 },
                 "Login successful"
             ));
 
-
     } catch (error) {
-        console.error("Login error:", error);
+        console.error("Verification error:", error);
         return res
             .status(500)
             .json(new ApiResponse(
                 500,
                 { error: error.message },
-                "Login failed - internal server error"
+                "Verification failed"
             ));
     }
+});
 
-})
-
-const forgotPassword = asyncHandler(async(req,res)=>{
-
-})
 
 const logout = asyncHandler(async(req,res)=>{
     try {
@@ -157,8 +171,7 @@ const logout = asyncHandler(async(req,res)=>{
 })
 
 export {
-    registerUser,
-    login,
-    forgotPassword,
+    sendOTP,
+    verifyOTPAndLogin,
     logout
 }
