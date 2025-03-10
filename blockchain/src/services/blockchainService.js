@@ -26,7 +26,6 @@ class BlockchainService {
 
       console.log("Deploying with account:", signer.address);
 
-      // Converting to BigInt for Solidity
 
       console.log("Deployment parameters:", {
         email,

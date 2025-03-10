@@ -1,0 +1,15 @@
+The time capsule project is where user can upload their memories
+to get them after certain period of time. 
+For example: If a user wants to get his current family picture on his 50th
+birthday, the user just have to upload and set the date when the user wants the memory.
+
+-> we support long time period for example after 5years, 20 years, etc.
+-> Technology used:
+    >For registerting the new user and create capusule I am using
+     Express server to accept the request.
+    >Right now the registerting and creting the new capsule and user
+     is not hosted online.
+    >But for delivering the memories I am using AWS services like
+     lambda(for sending the memories) and EventScheduler(For longtime scheduling)
+    >The deliver process is entirely serverless.
+    

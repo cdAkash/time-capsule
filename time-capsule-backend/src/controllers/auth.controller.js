@@ -1,7 +1,7 @@
 
 import {asyncHandler} from '../utils/asyncHandler.js'
 import {ApiResponse} from '../utils/ApiResponse.js'
-import {comparePassword,
+import {
     generateAccessToken,
     generateRefreshToken} from '../utils/auth.js'
 import {
