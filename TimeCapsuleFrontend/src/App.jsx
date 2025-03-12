@@ -1,16 +1,19 @@
 import { React } from 'react'
-import { Button } from './components/ui/button'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import HomePage from "@/pages/HomePage.jsx";
+import  CapsulePage from "@/pages/CapsulePage.jsx";
 
 function App() {
 
   return (
-    <>
-      <div>
-      <Button>Click me</Button>
-      <h1>hello</h1>
-    </div>
-    </>
-  )
+    <Router>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/create-capsule" element={<CapsulePage />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </Router>
+  );
 }
 
 export default App
