@@ -8,6 +8,8 @@ import { Label } from "@/components/ui/label"
 import { AlertCircle } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
+const API_BASE_URL = "http://localhost:8000/api/v1";
+
 export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
   const [email, setEmail] = useState("")
   const [otp, setOtp] = useState("")
@@ -31,13 +33,25 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
 
     setIsLoading(true)
 
-    // Simulate API call to send OTP
     try {
-      // In a real app, you would call your API here
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      const response = await fetch(`${API_BASE_URL}/auth/send-otp`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+        credentials: 'include',
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to send OTP');
+      }
+      
       setStep("otp")
     } catch (err) {
-      setError("Failed to send OTP. Please try again.")
+      setError(err.message || "Failed to send OTP. Please try again.")
     } finally {
       setIsLoading(false)
     }
@@ -54,14 +68,48 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
 
     setIsLoading(true)
 
-    // Simulate API call to verify OTP
     try {
-      // In a real app, you would call your API here
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-      onLoginSuccess(email)
-      resetForm()
+      console.log("Verifying OTP...");
+      const response = await fetch(`${API_BASE_URL}/auth/verify-otp`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, otp }),
+        credentials: 'include',
+      });
+
+      const data = await response.json();
+      console.log("OTP verification response:", data);
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'OTP verification failed');
+      }
+      
+      // Create user data object
+      const userData = {
+        email,
+        userId: data.data?.user?.userId,
+        capsules: data.data?.user?.capsules || []
+      };
+      
+      console.log("Calling onLoginSuccess with:", userData);
+      
+      // Call the onLoginSuccess callback before any state updates
+      // to prevent issues with unmounted components
+      if (onLoginSuccess) {
+        onLoginSuccess(userData);
+      }
+      
+      // Then handle modal cleanup
+      setEmail("");
+      setOtp("");
+      setStep("email");
+      setError("");
+      
     } catch (err) {
-      setError("Invalid OTP. Please try again.")
+      console.error("OTP verification error:", err);
+      setError(err.message || "Invalid OTP. Please try again.")
     } finally {
       setIsLoading(false)
     }
@@ -136,4 +184,3 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
     </Dialog>
   )
 }
-

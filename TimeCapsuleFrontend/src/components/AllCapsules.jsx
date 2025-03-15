@@ -1,57 +1,40 @@
 import { useState, useEffect } from "react";
 import { Clock, ArrowRight, CalendarIcon } from "lucide-react";
-
-export default function AllCapsules({ email }) {
+const API_BASE_URL = "http://localhost:8000/api/v1";
+export default function AllCapsules({ email, refreshTrigger }) {
   const [capsules, setCapsules] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  async function fetchCapsules() {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_BASE_URL}/capsule/getAll-Capsule`, {
+        method: 'GET',
+        credentials: 'include',
+      });
 
-  useEffect(() => {
-    // Mock fetching capsules - in a real app, this would be an API call
-    const fetchCapsules = async () => {
-      try {
-        setLoading(true);
-        
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 800));
-        
-        // Mock data - in a real app, you would fetch this from your backend
-        const mockCapsules = [
-          {
-            id: 1,
-            title: "My 30th Birthday",
-            recipientEmail: email,
-            deliveryDate: "2026-03-15",
-            createdAt: "2025-03-10"
-          },
-          {
-            id: 2,
-            title: "Wedding Anniversary",
-            recipientEmail: "partner@example.com",
-            deliveryDate: "2026-06-20",
-            createdAt: "2025-02-14"
-          },
-          {
-            id: 3,
-            title: "Time Capsule 2030",
-            recipientEmail: email,
-            deliveryDate: "2030-01-01",
-            createdAt: "2025-01-02"
-          }
-        ];
-        
-        setCapsules(mockCapsules);
-        setLoading(false);
-      } catch (err) {
-        setError("Failed to load capsules");
-        setLoading(false);
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to load capsules");
       }
-    };
+
+      const data = await response.json();
+      // Ensure your backend returns `data.data.capsules`
+      setCapsules(data.data?.capsules || []);
+      setLoading(false);
+      setError(null);
+    } catch (err) {
+      console.error("Error occurred during fetching capsules: ", err);
+    setError(err.message || "Failed to load capsules");
+    setLoading(false);
+    }
+  };
+  useEffect(() => {
+
 
     if (email) {
       fetchCapsules();
     }
-  }, [email]);
+  }, [email, refreshTrigger]);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -92,7 +75,7 @@ export default function AllCapsules({ email }) {
       <div className="h-full bg-white p-6 rounded-lg shadow-md flex items-center justify-center">
         <div className="text-center text-red-500">
           <p>{error}</p>
-          <button className="mt-2 text-purple-600 hover:underline">Try again</button>
+          <button className="mt-2 text-purple-600 hover:underline" onClick={fetchCapsules}>Try again</button>
         </div>
       </div>
     );

@@ -72,7 +72,7 @@ const verifyOTPAndLogin = asyncHandler(async(req, res) => {
         }
 
         const userId = userResponse.data.userId;
-    
+        const userCapsules = userResponse.data.capsules || [];
         const accessToken = generateAccessToken(userId);
         const refreshToken = generateRefreshToken(userId);
 
@@ -102,7 +102,8 @@ const verifyOTPAndLogin = asyncHandler(async(req, res) => {
         const userWithoutSensitiveData = {
             email,
             userId,
-            isNewUser: userResponse.data.isNewUser
+            isNewUser: userResponse.data.isNewUser,
+            capsules: userCapsules
         };
 
         return res

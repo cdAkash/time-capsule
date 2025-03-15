@@ -14,15 +14,18 @@ const verifyJWT=asyncHandler(async(req,res,next)=>{
             throw new ApiError(401,"Unauthorized request")
         }
         const decodedToken = jwt.verify(token,process.env.ACCESS_TOKEN_SECRET)
+        // console.log(decodedToken)
         const user = await getUserByID(decodedToken.userId);
         if(!user){
 
             throw new ApiError(401,"Invalid Access Token")
         }
+        // console.log(user)
         req.user = user
+        // console.log(req.user.PK)
         next()
     } catch (error) {
-        return new ApiResponse(400,{},"User not found")
+        return res.status(400).json(new ApiResponse(400, {}, "User not found"));
     }
 })
 

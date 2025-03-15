@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { format } from "date-fns"
 import { CalendarIcon, Clock, Upload, AlertCircle } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-
+const API_BASE_URL = "http://localhost:8000/api/v1";
 export default function CapsuleForm({ primaryEmail, onSubmit }) {
   const [secondaryEmails, setSecondaryEmails] = useState("")
   const [date, setDate] = useState(null)
@@ -108,25 +108,50 @@ export default function CapsuleForm({ primaryEmail, onSubmit }) {
     setIsLoading(true)
 
     try {
-      // Format the data
-      const formData = {
-        primaryEmail,
-        secondaryEmails: secondaryEmails ? secondaryEmails.split(",").map((email) => email.trim()) : [],
-        deliveryDate: date,
-        deliveryTime: time,
-        file,
-        message,
+      const formData = new FormData();
+    
+    // Add primary email and any secondary emails
+    // Add primary email and any secondary emails
+  const allEmails = [primaryEmail];
+  if (secondaryEmails) {
+    allEmails.push(...secondaryEmails.split(",").map(email => email.trim()));
+  }
+  
+  // THIS IS THE CRITICAL PART - make sure it's a proper JSON string
+  const emailsJson = JSON.stringify(allEmails);
+  console.log("Sending emails JSON:", emailsJson); // Debug the exact string
+  formData.append('emails', emailsJson);
+    
+    // Combine date and time into a single ISO string
+    const deliveryDateTime = new Date(date);
+    const [hours, minutes] = time.split(':').map(Number);
+    deliveryDateTime.setHours(hours, minutes);
+    
+    formData.append('deliveryDate', deliveryDateTime.toISOString());
+    
+    // Add file if present
+    if (file) {
+      formData.append('file', file);
+    }
+    console.log("Sending emails:", JSON.stringify(allEmails));
+      
+      const response = await fetch(`${API_BASE_URL}/capsule/create-capsule`, {
+        method: 'POST',
+        credentials: 'include',
+        body: formData
+      });
+  
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to create time capsule");
       }
+  
+      onSubmit(data.data?.capsule || {});
 
-      // In a real app, you would create a FormData object and send the file
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-
-      // Call the onSubmit callback
-      onSubmit(formData)
     } catch (error) {
-      setErrors({ submit: "Failed to submit form. Please try again." })
+      console.error("Submission error:", error);
+    setErrors({ submit: error.message || "Failed to submit form. Please try again." });
     } finally {
       setIsLoading(false)
     }

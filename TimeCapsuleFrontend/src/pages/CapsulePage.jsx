@@ -9,13 +9,13 @@ export default function CreateCapsulePage() {
   const [primaryEmail, setPrimaryEmail] = useState("");
   const [isThankYouModalOpen, setIsThankYouModalOpen] = useState(false);
   const [capsules, setCapsules] = useState([]);
+  const [refreshKey, setRefreshKey] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Get the primary email from sessionStorage
     const email = sessionStorage.getItem("primaryEmail");
     if (!email) {
-      // Redirect to home if no email is found
+
       navigate("/");
       return;
     }
@@ -23,11 +23,7 @@ export default function CreateCapsulePage() {
   }, [navigate]);
 
   const handleFormSubmit = (formData) => {
-    // Here you would typically send the data to your backend
     console.log("Form submitted:", formData);
-    
-    // In a real app, you would add the new capsule after successful API response
-    // For now, we'll simulate a successful response
     const newCapsule = {
       id: Date.now(), // temporary ID
       title: formData.title,
@@ -35,11 +31,10 @@ export default function CreateCapsulePage() {
       deliveryDate: formData.deliveryDate,
       createdAt: new Date().toISOString().split('T')[0]
     };
-    
-    // Update the capsules list
+
     setCapsules(prev => [newCapsule, ...prev]);
 
-    // Show thank you modal
+    setRefreshKey(old => old + 1);
     setIsThankYouModalOpen(true);
   };
 
@@ -63,7 +58,7 @@ export default function CreateCapsulePage() {
               <CapsuleForm primaryEmail={primaryEmail} onSubmit={handleFormSubmit} />
             </div>
             <div className="lg:col-span-1">
-              <AllCapsules email={primaryEmail} capsules={capsules} />
+              <AllCapsules email={primaryEmail} refreshTrigger={refreshKey} />
             </div>
           </div>
         )}

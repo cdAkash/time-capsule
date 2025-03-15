@@ -42,12 +42,12 @@ const createCapsuleController = asyncHandler(async(req,res)=>{
     const cloud = await uploadOnCloudinary(localFilePath)
     const fileURL = cloud.url
     
-    const contractAddress= await createCapsuleContract(email,fileHash,deliveryDateTimeStamp);
-    if (contractAddress instanceof ApiResponse) {
-            throw new Error(contractAddress.message);
-        }
+    // const contractAddress= await createCapsuleContract(email,fileHash,deliveryDate);
+    // if (contractAddress instanceof ApiResponse) {
+    //         throw new Error(contractAddress.message);
+    //     }
     
-    // const contractAddress ="0x45b244301dd6F9A3d8A3EdB562573a2741b6e5b4"
+    const contractAddress ="0x45b244301dd6F9A3d8A3EdB562573a2741b6e5b4"
 
     
         const capsule = await createCapsuleQuery(userId,contractAddress,fileHash,fileURL,emails,deliveryDate);
@@ -67,14 +67,15 @@ const createCapsuleController = asyncHandler(async(req,res)=>{
 
 const userAllCapsules = asyncHandler(async(req, res) => {
     try {
-        
-        if (!req.user?.data?.[0]?.PK) {
+        // console.log(req.user.PK)
+        if (!req.user?.PK) {
+            // console.log("Happening here")
             return res
                 .status(401)
                 .json(new ApiResponse(401, null, "Unauthorized access"));
         }
 
-        const userId = req.user.data[0].PK;
+        const userId = req.user.PK;
         const capsuleResponse = await getAllUsersCapsules(userId);
 
     
@@ -87,7 +88,10 @@ const userAllCapsules = asyncHandler(async(req, res) => {
             .status(200)
             .json(new ApiResponse(
                 200,
-                { capsuleCount: capsuleResponse.data.count },
+                { capsuleCount: capsuleResponse.data.count,
+                    capsules: capsuleResponse.data.capsules
+                 },
+                
                 "Successfully retrieved capsule count"
             ));
 
