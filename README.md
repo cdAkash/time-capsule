@@ -1,5 +1,4 @@
 
-```
 # Time Capsule Project
 
 A digital time capsule platform that lets users create and store memories to be revealed at a future date. Built with React, Node.js, AWS DynamoDB, and blockchain technology.
