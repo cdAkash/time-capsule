@@ -24,13 +24,13 @@ const createCapsuleController = asyncHandler(async(req,res)=>{
     }
 
     
-    if (!Array.isArray(emails) || emails.length === 0 || emails.length > 2) {
+    if (!Array.isArray(emails) || emails.length === 0 || emails.length > 4) {
         return res.status(400).json(
             new ApiResponse(400, null, "Please provide 1-2 valid email addresses")
         );
     }
-    const userId = req.user.data[0].PK
-    const email =req.user.data[0].email
+    const userId = req.user.PK
+    const email =req.user.email
     console.log(email)
 
     const localFilePath = req.file?.path;
@@ -50,7 +50,7 @@ const createCapsuleController = asyncHandler(async(req,res)=>{
     const contractAddress ="0x45b244301dd6F9A3d8A3EdB562573a2741b6e5b4"
 
     
-        const capsule = await createCapsuleQuery(userId,contractAddress,fileHash,fileURL,emails,deliveryDate);
+        const capsule = await createCapsuleQuery(userId,email,contractAddress,fileHash,fileURL,emails,deliveryDate);
         if(capsule.statusCode!==201){
             throw new error(capsule.message || "Capsule creation Failed")
         }

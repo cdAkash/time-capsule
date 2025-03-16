@@ -108,38 +108,33 @@ export default function CapsuleForm({ primaryEmail, onSubmit }) {
     setIsLoading(true)
 
     try {
-      const formData = new FormData();
-    
-    // Add primary email and any secondary emails
-    // Add primary email and any secondary emails
-  const allEmails = [primaryEmail];
-  if (secondaryEmails) {
-    allEmails.push(...secondaryEmails.split(",").map(email => email.trim()));
-  }
+      const formData = new FormData(); 
+      const allEmails = [primaryEmail];
+      if (secondaryEmails) {
+        allEmails.push(...secondaryEmails.split(",").map(email => email.trim()));
+      }
+      // formData.append('emails', JSON.stringify(allEmails));
+      allEmails.forEach(email => {
+        formData.append('emails[]', email);
+      });
   
-  // THIS IS THE CRITICAL PART - make sure it's a proper JSON string
-  const emailsJson = JSON.stringify(allEmails);
-  console.log("Sending emails JSON:", emailsJson); // Debug the exact string
-  formData.append('emails', emailsJson);
     
-    // Combine date and time into a single ISO string
+
     const deliveryDateTime = new Date(date);
     const [hours, minutes] = time.split(':').map(Number);
     deliveryDateTime.setHours(hours, minutes);
-    
     formData.append('deliveryDate', deliveryDateTime.toISOString());
     
-    // Add file if present
     if (file) {
       formData.append('file', file);
     }
     console.log("Sending emails:", JSON.stringify(allEmails));
       
-      const response = await fetch(`${API_BASE_URL}/capsule/create-capsule`, {
-        method: 'POST',
-        credentials: 'include',
-        body: formData
-      });
+    const response = await fetch(`${API_BASE_URL}/capsule/create-capsule`, {
+      method: 'POST',
+      credentials: 'include',
+      body: formData
+    });
   
       const data = await response.json();
       

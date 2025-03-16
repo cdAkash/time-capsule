@@ -101,7 +101,7 @@ export default function AllCapsules({ email, refreshTrigger }) {
               className="border-b border-gray-100 last:border-0 pb-4 mb-4 last:mb-0 last:pb-0"
             >
               <div className="flex justify-between items-start">
-                <h3 className="font-semibold text-lg text-gray-800">{capsule.title}</h3>
+                <h3 className="font-semibold text-lg text-gray-800">{capsule.id}</h3>
                 <span className="text-xs bg-purple-100 text-purple-700 py-1 px-2 rounded-full">
                   {calculateTimeRemaining(capsule.deliveryDate)}
                 </span>

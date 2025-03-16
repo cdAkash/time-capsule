@@ -4,7 +4,7 @@ import {v4 as uuidv4} from 'uuid';
 import  {hashPassword}  from '../utils/auth.js';
 
 
-async function createCapsule(userId, contractAddress, fileHash, fileURL, emails, deliveryDate) {
+async function createCapsule(userId,email,contractAddress, fileHash, fileURL, emails, deliveryDate) {
     try {
         const capsuleId = uuidv4();
         
@@ -21,6 +21,7 @@ async function createCapsule(userId, contractAddress, fileHash, fileURL, emails,
             PK: `${userId}`,
             SK: `CAPSULE#${capsuleId}`,
             EntityType: 'Capsule',
+            email,
             contractAddress,
             fileHash,
             fileURL,

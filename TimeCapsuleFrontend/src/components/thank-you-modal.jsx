@@ -27,13 +27,13 @@ export default function ThankYouModal({ isOpen, onClose }) {
 
         <div className="py-4 text-center">
           <p className="text-muted-foreground">
-            You'll receive a confirmation email shortly with the details of your time capsule.
+            Thank You for using our service.
           </p>
         </div>
 
         <DialogFooter>
           <Button onClick={onClose} className="w-full">
-            Return to Home
+            Return
           </Button>
         </DialogFooter>
       </DialogContent>
