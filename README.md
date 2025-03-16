@@ -33,6 +33,9 @@ A digital time capsule platform that lets users create and store memories to be 
 
 *Click the image above to watch the demo video*
 
+![Basic Flow of the Project](/screenshot/howitworks.png)
+
+*How it works*
 
 
 ## 🏗️ Architecture
