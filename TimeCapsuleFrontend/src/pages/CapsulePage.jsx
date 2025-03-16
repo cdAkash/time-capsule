@@ -4,14 +4,14 @@ import CapsuleForm from "@/components/capsule-form";
 import ThankYouModal from "@/components/thank-you-modal";
 import AllCapsules from "@/components/AllCapsules";
 import { Button } from "@/components/ui/button";
-
+import { LogOut } from "lucide-react"; 
 export default function CreateCapsulePage() {
   const [primaryEmail, setPrimaryEmail] = useState("");
   const [isThankYouModalOpen, setIsThankYouModalOpen] = useState(false);
   const [capsules, setCapsules] = useState([]);
   const [refreshKey, setRefreshKey] = useState(0);
   const navigate = useNavigate();
-
+  const API_BASE_URL = "http://localhost:8000/api/v1";
   useEffect(() => {
     const email = sessionStorage.getItem("primaryEmail");
     if (!email) {
@@ -41,6 +41,25 @@ export default function CreateCapsulePage() {
   const handleThankYouClose = () => {
     setIsThankYouModalOpen(false);
   };
+  const handleLogout = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+      
+      if (response.ok) {
+        // Clear session storage
+        sessionStorage.removeItem("primaryEmail");
+        // Navigate back to home
+        navigate("/");
+      } else {
+        console.error("Logout failed");
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
 
   return (
     <main className="min-h-screen bg-gray-50 py-12">
@@ -51,6 +70,14 @@ export default function CreateCapsulePage() {
           </Button>
           <h1 className="text-3xl font-bold">Create Your Time Capsule</h1>
         </div>
+        <Button 
+          variant="destructive"
+          onClick={handleLogout} 
+          className="flex items-center gap-2 ml-auto"
+        >
+          <LogOut size={16} />
+          Logout
+        </Button>
 
         {primaryEmail && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

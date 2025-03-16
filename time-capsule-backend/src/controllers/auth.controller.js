@@ -133,7 +133,7 @@ const verifyOTPAndLogin = asyncHandler(async(req, res) => {
 
 const logout = asyncHandler(async(req,res)=>{
     try {
-        const userId = req.user.data[0].PK
+        const userId = req.user.PK
         // console.log(req.user.data[0].PK)
         await UserCapsuleTable.update({
                 PK: userId,
@@ -151,7 +151,7 @@ const logout = asyncHandler(async(req,res)=>{
             }
             return res
             .status(200)
-            .clearCookie("accesToken",options)
+            .clearCookie("accessToken",options)
             .clearCookie("refreshToken",options)
             .json(new ApiResponse(200, {}, "Logged out successfully"));
 
