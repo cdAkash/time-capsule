@@ -11,6 +11,23 @@ A digital time capsule platform that lets users create and store memories to be 
 - **Blockchain Integration** - Immutable storage using smart contracts
 - **User Dashboard** - View and manage all your created capsules
 
+
+## 📸 Screenshots & Demo
+
+### Screenshots
+![Homepage](/path/to/homepage-screenshot.png)
+*Homepage with login functionality*
+
+![Capsule Creation](/path/to/capsule-creation-screenshot.png)
+*Creating a new time capsule*
+
+
+### Demo Video
+[![Time Capsule Demo](https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg)](https://www.youtube.com/watch?v=Q10_srZ-pbs)
+*Click the image above to watch the demo video*
+
+
+
 ## 🏗️ Architecture
 
 ### Frontend
@@ -196,8 +213,8 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## 📄 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-EOF
-```
+
+
 
 
 
