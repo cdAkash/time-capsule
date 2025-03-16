@@ -15,18 +15,21 @@ A digital time capsule platform that lets users create and store memories to be 
 ## 📸 Screenshots & Demo
 
 ### Screenshots
-![Homepage](/screendhot/01.png)(/screendhot/02.png)
+![Homepage](/screenshot/01.png)
+
 *Homepage with login functionality*
 
-![Login](/screendhot/03.png)
+![Login](/screenshot/03.png)
+
 *Login Modal*
 
-![Capsule Creation](/screendhot/04.png)
+![Capsule Creation](/screenshot/04.png)
+
 *Creating a new time capsule*
 
 
 ### Demo Video
-[![Time Capsule Demo](/screendhot/01.png)](https://www.youtube.com/watch?v=Q10_srZ-pbs)
+[![Time Capsule Demo](/screenshot/01.png)](https://www.youtube.com/watch?v=Q10_srZ-pbs)
 
 *Click the image above to watch the demo video*
 
