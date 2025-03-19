@@ -23,7 +23,7 @@ const processCapsules = async()=>{
                 console.error(`Hash mismatch for capsule: ${capsule.SK}`);
                 const errorMessage = "Your data has been tampered. Sorry!";
                 results.push(errorMessage);
-                continue; // Skip to the next capsule
+                continue; 
             }
 
             const  email  = ContractResponse.data.email;

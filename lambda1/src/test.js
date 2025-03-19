@@ -10,14 +10,12 @@ const scheduledTime = new Date(
     Math.floor(seconds)
   );
   
-  // Adjust for local time zone offset
+
   const localScheduledTime = new Date(
     scheduledTime.getTime() - (scheduledTime.getTimezoneOffset() * 60000)
   );
   
-  // Ensure scheduledTime is in the future
   if (localScheduledTime <= now) {
-    // If the time has passed, add a day
     localScheduledTime.setDate(localScheduledTime.getDate() + 1);
   }
 

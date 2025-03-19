@@ -18,7 +18,7 @@ export default function AllCapsules({ email, refreshTrigger }) {
       }
 
       const data = await response.json();
-      // Ensure your backend returns `data.data.capsules`
+
       setCapsules(data.data?.capsules || []);
       setLoading(false);
       setError(null);

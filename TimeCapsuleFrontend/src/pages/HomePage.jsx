@@ -14,11 +14,10 @@ export default function HomePage() {
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState(null)
   
-  // Debug effect to track userInfo changes
   useEffect(() => {
     if (userInfo) {
       console.log("User info updated:", userInfo);
-      // Navigate immediately when userInfo is set
+
       navigate("/create-capsule");
     }
   }, [userInfo, navigate]);

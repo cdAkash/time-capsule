@@ -94,14 +94,12 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
       };
       
       console.log("Calling onLoginSuccess with:", userData);
-      
-      // Call the onLoginSuccess callback before any state updates
-      // to prevent issues with unmounted components
+   
       if (onLoginSuccess) {
         onLoginSuccess(userData);
       }
       
-      // Then handle modal cleanup
+
       setEmail("");
       setOtp("");
       setStep("email");

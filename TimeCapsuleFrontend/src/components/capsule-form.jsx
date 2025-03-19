@@ -43,12 +43,11 @@ export default function CapsuleForm({ primaryEmail, onSubmit }) {
   const validateFile = (file) => {
     if (!file) return true
 
-    // Check file size (10MB = 10 * 1024 * 1024 bytes)
     if (file.size > 10 * 1024 * 1024) {
       return "File size must be less than 10MB"
     }
 
-    // Check file type
+
     const allowedTypes = ["image/jpeg", "image/png", "image/gif", "video/mp4", "video/quicktime"]
     if (!allowedTypes.includes(file.type)) {
       return "Only images (JPEG, PNG, GIF) and videos (MP4, MOV) are allowed"
@@ -61,7 +60,7 @@ export default function CapsuleForm({ primaryEmail, onSubmit }) {
     const selectedFile = e.target.files[0]
     setFile(selectedFile || null)
 
-    // Validate file immediately
+
     if (selectedFile) {
       const fileValidation = validateFile(selectedFile)
       if (fileValidation !== true) {
